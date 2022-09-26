@@ -4,118 +4,77 @@
     <title>Oussama-Fajraoui</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <style>
-h1 {
-    text-align: center;
+canvas {
+    background-color: #282a28;
+    margin: 5em auto;
 }
 
-#canvas {
-    background-color: #ccddcc;
-    margin: 1em auto;
-}
-
-.ball {
-    background-color: rgb(95, 90, 90);
-    position: relative;
-    border-radius: 50%;
-}
 </style>
 </head>
 
-
-<div id="canvas">
-</div>
+<body onload="startGame()">
 <script>
 
-var canvas = {
-    element: document.getElementById('canvas'),
-    width: 320,
-    height: 480,
-    initialize: function () {
-        this.element.style.width = this.width + 'px';
-        this.element.style.height = this.height + 'px';
-        document.body.appendChild(this.element);
-    }
-};
+var myGamePiece;
 
-var ball = {
-    element: document.createElement('div'),
-    width: 40,
-    height: 40,
-    dx: 4,
-    dy: 3,
-    initialize: function () {
-        this.element.className += ' ball';
-        this.element.style.width = this.width + 'px';
-        this.element.style.height = this.height + 'px';
-        canvas.element.appendChild(this.element);
-    },
-    moveTo: function (x, y) {
-        this.element.style.left = x + 'px';
-        this.element.style.top = y + 'px';
-    },
-    changeDirectionIfNecessary: function (x, y) {
-        if (x < 0 || x > canvas.width - ball.width) {
-            this.dx = -this.dx;
-        }
-        if (y < 0 || y > canvas.height - ball.height) {
-            this.dy = -this.dy;
-        }
-    },
-    draw: function (x, y) {
-        this.moveTo(x, y);
-        var ball = this;
-        setTimeout(function () {
-            ball.changeDirectionIfNecessary(x, y);
-            ball.draw(x + ball.dx, y + ball.dy);
-        }, 1000 / 15);
-    }
-};
-
-
-
-canvas.initialize();
-ball.initialize();
-ball.draw(0, 0);
-
-
-function isIntersect(point, ball) {
-  return (Math.pow(Math.sqrt(point.x-ball.offsetLeft)) + Math.pow(Math.sqrt(point.y-ball.offsetTop))) < 40;
+function startGame() {
+    myGamePiece = new component(50, 50, "red", 130, 75);
+    myGameArea.start();
 }
-canvas.addEventListener('click', (e) => {
-  const pos = {
-    x: e.clientX,
-    y: e.clientY
-  };
-  circles.forEach(circle => {
-    if (isIntersect(mousePoint, circle)) {
-      alert('click on circle: ' + circle.id);
+
+var myGameArea = {
+    canvas : document.createElement("canvas"),
+    start : function() {
+        this.canvas.width = 320;
+        this.canvas.height = 480;
+        this.context = this.canvas.getContext("2d");
+        document.body.insertBefore(this.canvas, document.body.childNodes[0]);
+        this.interval = setInterval(updateGameArea, 20);        
+    },
+    stop : function() {
+        clearInterval(this.interval);
+    },    
+    clear : function() {
+        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
     }
-  });
-});
+}
 
-
-canvas.element.addEventListener('click', function(event) {
-    const pos = {
-      x: event.clientX,
-      y: event.clientY
-    };
-    
-    if (isIntersect(pos, ball.element)) {
-      alert('click on circle');
+function component(width, height, color, x, y, type) {
+    this.type = type;
+    this.width = width;
+    this.height = height;
+    this.x = x;
+    this.y = y;    
+    this.speedX = 0;
+    this.speedY = 0;    
+    this.gravity = 0.3;
+    this.gravitySpeed = 0;
+    this.bounce = 0.8;
+    this.update = function() {
+        ctx = myGameArea.context;
+        ctx.fillStyle = color;
+        ctx.fillRect(this.x, this.y, this.width, this.height);
     }
-    
-    
-var x = event.pageX - canvas.element.offsetLeft,
-        y = event.pageY - canvas.element.offsetTop;
-    console.log(x, y);
-    console.log(ball.element.offsetLeft, ball.element.offsetTop)
-    
-    
-      if (y > ball.element.offsetTop && y < ball.element.offsetTop + 40 && x > ball.element.offsetLeft && x < ball.element.offsetLeft + 40) {
-    alert('clicked an element');
-      }
-}, false);
+    this.newPos = function() {
+        this.gravitySpeed += this.gravity;
+        this.x += this.speedX;
+        this.y += this.speedY + this.gravitySpeed;
+        this.hitBottom();
+    }
+    this.hitBottom = function() {
+        var rockbottom = myGameArea.canvas.height - this.height;
+        if (this.y > rockbottom) {
+            this.y = rockbottom;
+            this.gravitySpeed = -(this.gravitySpeed * this.bounce);
+        }
+    }
+}
 
+function updateGameArea() {
+    myGameArea.clear();
+    myGamePiece.newPos();
+    myGamePiece.update();
+}
 </script>
 </body>
 </html>
