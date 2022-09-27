@@ -1,76 +1,46 @@
 <!DOCTYPE html>
 <html>
- <head>
-  <meta charset="utf-8">
-  <title>Bouncing ball</title>
-  <style>
-    #canvas {
-        background-color: rgb(43, 41, 41);
-        margin-left: 35%;
-    }
-  </style>
- </head>
- <body>
-  <canvas id="canvas" width="320" height="480"></canvas>
-  <script>
-    // initialise canvas and context
-var canvas = document.getElementById('canvas');
-var context = canvas.getContext('2d'); 
-// var ball = new drawBall();
-// ball.src = "ball.jpg";
- 
-// physical variables
-var g = 0.1; // gravity
-var fac = 0.8; // velocity reduction factor per bounce
-var radius = 30; // ball radius
-var color = "red"; // ball color
- 
-// initialise position and velocity of ball
-var x = 50;
-var y = 50;
-var vx = 5;
-var vy = 5;
- 
-window.onload = init; 
- 
-function init() {
-// set up a timer
-    setInterval(update, 100/60); // 60 frames per second
-};
- 
-function update() {
-  // update velocity
-  vy += g; // gravity
- 
-  // update position
-//   x += vx;
-  y += vy; 
- 
-  // handle bouncing
-  if (y > canvas.height - radius){
-    y = canvas.height - radius;
-    vy *= -fac;
-  }
- 
-  // wrap around
-//   if (x > canvas.width + radius){
-//     x = -radius;
-//   }
- 
-  // update the ball
-  drawBall();
-};
- 
-function drawBall() {
-    with (context){
-        clearRect(0, 0, canvas.width, canvas.height); // clear canvas
-        fillStyle = color;
-        beginPath();
-        arc(x, y, radius, 0, 2*Math.PI, true);
-        closePath();
-        fill();
-    };
-};
-  </script>
- </body>
+    <head>
+		<title>Bouncing Ball</title>
+        <style>
+            body{
+                background-color: rgb(77, 77, 133);
+            }
+            .container{
+                align-items: center;
+            }
+        </style>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+		<script src="main.js"></script>
+		<script>
+			$(document).ready(function() {
+				setup();
+			});
+		</script>
+	</head>
+	<body align="center" class="container-fluid">
+        <div class="container">
+
+            <table align="center">
+                <tr>
+                    <th>
+                        <div>
+                            <input type="range" id="density" min="0" step="0.01" max="1000" value="1.22"/>
+                        </div>
+                    </th>
+                    <th>
+                        <div>
+                            <input type="range" id="gravity" min="0" step="0.1" max="10" value="1"/>	
+                        </div>
+                    </th>
+                    <th>
+                        <div>
+                            <input type="range" id="drag" min="0" step="0.01" max="1" value="0.47"/>	
+                        </div>
+                    </th>
+                </tr>
+            </table>
+            <canvas id="canvas" width="320" height="480" style="background-color:rgb(255, 255, 255)"></canvas>
+        </div>
+	</body>
 </html>
